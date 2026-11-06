@@ -1,0 +1,4 @@
+﻿[Music Folder][#ALL]
+#%USERPROFILE%\music\J-POP
+%USERPROFILE%\music\City-pop
+#%USERPROFILE%\music\Xmas
