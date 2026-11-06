@@ -49,8 +49,8 @@
    ** Dドライブに展開した場合 **
   🖴D:\
     ┣📁SI_Audio_MC	    ：  アプリのフォルダー（任意）[1]
-    ┃┃  config.ini      ： 設定ファイル
-    ：┃  music.txt	      ： 音楽フォルダ一覧
+      ┃  config.ini      ： 設定ファイル
+      ┃  music.txt	      ： 音楽フォルダ一覧
       ┃  Prompt.txt      ： プロンプト
       ┃  Readme.txt      ： アプリの説明
       ┃  SI_Audio_MC.py  ： アプリ本体
@@ -92,6 +92,7 @@ pip install -r requirements.txt
 ```
 
 - 個々にライブラリをインストールする場合。
+** 不足しているライブラリがあれば、適宜インストールしてください **
 ```bash
 pip install ollama
 pip install pygame
@@ -99,10 +100,9 @@ pip install pydub
 pip install pynvml
 pip install configparser
 ```
-** 不足しているライブラリがあれば、適宜インストールしてください **
 
 3. [music.txt]ファイルに音楽ファイルを保存しているフォルダを記載してください。
-    ** `#`で始まる行は、対象外フォルダとして、スキップします **
+** `#`で始まる行は、対象外フォルダとして、スキップします **
 
 ## 5. アンインストール方法（Uninstall）
     インストールしたフォルダとフォルダ内の全てのファイルを削除してください。
@@ -117,22 +117,20 @@ pip install configparser
 D:
 cd \SI_Audio_MC
 ```
-  ↓
 D:\SI_Audio_MC >
 
 3.  仮想環境を立ち上げます。
 ```bash
 call .venv\Scripts\activate
 ```
-  ↓
 (.venv) D:\SI_Audio_MC >
 
 4.  アプリを起動します。
 ```bash
 python SI_Audio_MC.py
 ```
-  気分を入力すると、フォルダ毎にAIが音楽を選択します。
-  全フォルダからの抽出が完了すると演奏が開始されます。
+気分を入力すると、フォルダ毎にAIが音楽を選択します。
+全フォルダからの抽出が完了すると演奏が開始されます。
 
 5.  終了するには
   a. [Ctrl]+Cでアプリを停止します。
