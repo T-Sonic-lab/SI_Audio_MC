@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (c) 2026 T-Sonic
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"),
@@ -61,7 +61,8 @@ def load_all_music_list():
   file_Music=inifile.get('SYSTEM', 'music')
   print(f"file_Music: {file_Music}")
   if not os.path.exists(file_Music):
-    print(f"エラー: {file_Music} が見つかりません。空のリストを返します。")
+    # print(f"Error: {file_Music} が見つかりません。空のリストを返します。")
+    print(f"Error: {file_Music} not found. Returning an empty list.")
     return []
   
   root_dir_list = []
@@ -88,7 +89,8 @@ def load_prompt():
   sPrompt = ""
   filename = inifile.get('SYSTEM', 'prompt')
   if not os.path.exists(filename):
-    print(f"警告: Prompt→{filename} が見つかりません。")
+    # print(f"警告: Prompt→{filename} が見つかりません。")
+    print(f"Warning: Prompt→{filename} not found.")
     return sPrompt
     
   f=open(filename, "r", encoding="utf-8")
@@ -101,18 +103,32 @@ def get_context(user_mood):
   month = now.month
   hour = now.hour
   
-  if month in [3, 4, 5]: season = "春 (Spring)"
-  elif month in [6, 7, 8]: season = "夏 (Summer)"
-  elif month in [9, 10, 11]: season = "秋 (Autumn)"
-  else: season = "冬 (Winter)"
+  # if month in [3, 4, 5]: season = "春 (Spring)"
+  # elif month in [6, 7, 8]: season = "夏 (Summer)"
+  # elif month in [9, 10, 11]: season = "秋 (Autumn)"
+  # else: season = "冬 (Winter)"
   
-  if 5 <= hour < 11: timezone = "朝 (Morning)"
-  elif 11 <= hour < 16: timezone = "昼・午後 (Afternoon)"
-  elif 16 <= hour < 19: timezone = "夕方 (Evening)"
-  elif 19 <= hour < 23: timezone = "夜 (Night)"
-  else: timezone = "深夜 (Midnight)"
+  # if 5 <= hour < 11: timezone = "朝 (Morning)"
+  # elif 11 <= hour < 16: timezone = "昼・午後 (Afternoon)"
+  # elif 16 <= hour < 19: timezone = "夕方 (Evening)"
+  # elif 19 <= hour < 23: timezone = "夜 (Night)"
+  # else: timezone = "深夜 (Midnight)"
   
-  return f"現在の季節: {season}\n現在の時間帯: {timezone}\nリスナーの今の気分: {user_mood}"
+  # return f"現在の季節: {season}\n現在の時間帯: {timezone}\nリスナーの今の気分: {user_mood}"
+  
+  if month in [3, 4, 5]: season = "Spring"
+  elif month in [6, 7, 8]: season = "Summer"
+  elif month in [9, 10, 11]: season = "Autumn"
+  else: season = "Winter"
+  
+  if 5 <= hour < 11: timezone = "Morning"
+  elif 11 <= hour < 16: timezone = "Afternoon"
+  elif 16 <= hour < 19: timezone = "Evening"
+  elif 19 <= hour < 23: timezone = "Night"
+  else: timezone = "Midnight"
+  
+  return f"Current season: {season}\nCurrent time zone: {timezone}\nListener's current mood: {user_mood}"
+
 
 def ask_ollama_to_filter(all_keys_list, prompt_text, context_info):
   #"""💡 配列Aから条件にマッチする楽曲をすべてAIに抽出してもらう関数（新仕様）"""
@@ -123,9 +139,11 @@ def ask_ollama_to_filter(all_keys_list, prompt_text, context_info):
   files_str = "\n".join(indexed_files)
   
   system_prompt = (f"{prompt_text}\n"
-    f"【シチュエーション＆気分】\n{context_info}\n"
+    # f"【シチュエーション＆気分】\n{context_info}\n"
+    f"【Situation & Mood】\n{context_info}\n"
   )
-  user_prompt = f"【すべての曲リスト】\n{files_str}"
+  # user_prompt = f"【すべての曲リスト】\n{files_str}"
+  user_prompt = f"【All Song Lists】\n{files_str}"
 
   try:
     response = ollama.chat(
@@ -152,7 +170,8 @@ def ask_ollama_to_filter(all_keys_list, prompt_text, context_info):
 
     return matched_tracks
   except Exception as e:
-    print(f"😖Ollama通信エラー: {e}")
+    # print(f"😖Ollama通信エラー: {e}")
+    print(f"😖Ollama communication error: {e}")
     return []
 
 def main_AI_data(prompt_text, context_info):
@@ -175,7 +194,8 @@ def main_AI_data(prompt_text, context_info):
       
       GPU_Temp = getGPU_MaxTemp(device_count)
       if GPU_Temp>maxGPU_temp:
-        print(f"GPU：{GPU_Temp}℃  🥵冷却中・・・")
+        #print(f"GPU：{GPU_Temp}℃  🥵冷却中・・・")
+        print(f"GPU：{GPU_Temp}℃  🥵Cooling down...")
         while GPU_Temp>maxGPU_temp:
           time.sleep(5.0) # 5000ミリ秒（5.0秒）スリープする
           GPU_Temp = getGPU_MaxTemp(device_count)
@@ -264,47 +284,57 @@ def main():
   
   default_crossfade_ms = int(inifile.get('SYSTEM', 'crossfade_ms'))
   
-  print("🔍音楽ライブラリをスキャン中...")
+  #print("🔍音楽ライブラリをスキャン中...")
+  print("🔍Scanning music library...")
   ROOT_DIR_LIST = load_all_music_list()
  
   if IS_ALL_MUSIC:
     user_mood = "全曲対象"
   else:
-    user_mood = input("今の気分や聴きたい雰囲気を入力してください（例: 元気が出る曲, 落ちつく曲）\n> ")
+    # user_mood = input("今の気分や聴きたい雰囲気を入力してください（例: 元気が出る曲, 落ちつく曲）\n> ")
+    user_mood = input("Please enter your current mood or the kind of music you'd like to listen to (e.g., uplifting music, calming music).\n> ")
     if not user_mood.strip():
-      user_mood = "平常運転中"
+      # user_mood = "平常運転中"
+      user_mood = "Operating normally"
     
   context_info = get_context(user_mood)
   prompt_text = load_prompt() #プロンプト読み取り
 
   if IS_DEBUG:
-    print(f"{prompt_text}\n【シチュエーション＆気分】\n{context_info}\n")
+    #print(f"{prompt_text}\n【シチュエーション＆気分】\n{context_info}\n")
+    print(f"{prompt_text}\n【Situation & Mood】\n{context_info}\n")
 
   music_dict = main_AI_data(prompt_text, context_info)
 
   if not music_dict: # 万が一AIが1曲も返さなかった場合のセーフティ
-    print(f"[システム] AIによる抽出結果が0件だったため、全曲を対象にします。\n{context_info}")
+    # print(f"[システム] AIによる抽出結果が0件だったため、全曲を対象にします。\n{context_info}")
+    print(f"[System] Since the AI ​​extraction result was 0, all songs will be included.\n{context_info}")
     matched_pool = ALL_KEYS.copy()
   else:
     matched_pool = ALL_MATCHED_POOL
   
-  print(f"[システム] {len(matched_pool)} /  {len(ALL_KEYS)} 曲")
+  # print(f"[システム] {len(matched_pool)} /  {len(ALL_KEYS)} 曲")
+  print(f"[System {len(matched_pool)} /  {len(ALL_KEYS)} Songs")
   
   random.shuffle(matched_pool) # 💡配列Bをランダムに並び替える
-  print("[システム] 🔀配列Bのシャッフルが完了しました。再生を開始します。")
+  # print("[システム] 🔀配列Bのシャッフルが完了しました。再生を開始します。")
+  print("[System] 🔀Shuffling of array B is complete. Playback will now begin.")
   
   pool_index = 0
   song_count = 1
   
   picked_key = matched_pool[pool_index]  # 1曲目の再生準備
-  print(f"\n--- {song_count}曲目の再生準備 ---")
-  print(f"🎚️音量レベルを調整中...")
+  # print(f"\n--- {song_count}曲目の再生準備 ---")
+  # print(f"🎚️音量レベルを調整中...")
+  print(f"\n--- Preparing to play the {song_count} Track number ---")
+  print(f"🎚️Adjusting volume level...")
   sound_current = load_and_normalize_sound(music_dict[picked_key])
   
   total_duration_sec = sound_current.get_length()
-  print(f"\n（現在の配列B再生位置: {pool_index + 1} / {len(matched_pool)} 曲目）")
-  print(f"✨ 再生中: {picked_key} (全長: {int(total_duration_sec)}秒)")
-  
+  # print(f"\n（現在の配列B再生位置: {pool_index + 1} / {len(matched_pool)} 曲目）")
+  # print(f"✨ 再生中: {picked_key} (全長: {int(total_duration_sec)}秒)")
+  print(f"\n（Current sequence B: {pool_index + 1} / {len(matched_pool)} Track number）")
+  print(f"✨ Playing: {picked_key} (total length: {int(total_duration_sec)} seconds)")
   ch_current.play(sound_current)
   ch_current.set_volume(1.0)
   
@@ -331,7 +361,8 @@ def main():
         
         # 💡 3. 全て流し終わったら、配列Bをランダムに並び替えて最初(0)に戻る
         if next_index >= len(matched_pool):
-          print("\n[システム] 🔀配列Bの曲をすべて流し終えました。再シャッフルしてループします。")
+          # print("\n[システム] 🔀配列Bの曲をすべて流し終えました。再シャッフルしてループします。")
+          print("\n[System] 🔀All songs in array B have finished playing. Re-shuffle and loop.")
           random.shuffle(matched_pool)
           next_index = 0
         
@@ -361,8 +392,10 @@ def main():
     ch_next.set_volume(0.0)
     total_duration_sec = next_sound_object.get_length()
     
-    print(f"\n（現在の配列B再生位置: {pool_index + 1} / {len(matched_pool)} 曲目）")
-    print(f"✨ 再生中: {next_picked_key} (全長: {int(total_duration_sec)}秒)")
+    # print(f"\n（現在の配列B再生位置: {pool_index + 1} / {len(matched_pool)} 曲目）")
+    # print(f"✨ 再生中: {next_picked_key} (全長: {int(total_duration_sec)}秒)")
+    print(f"\n（Current playback position in array B: {pool_index + 1} / {len(matched_pool)} Track number）")
+    print(f"✨ Regenerating: {next_picked_key} (Total duration: {int(total_duration_sec)} seconds)")
     fade_steps = 100
     step_sleep = fade_sec / fade_steps
     
