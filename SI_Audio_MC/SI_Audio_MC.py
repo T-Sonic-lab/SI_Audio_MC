@@ -396,15 +396,23 @@ def main():
     # print(f"✨ 再生中: {next_picked_key} (全長: {int(total_duration_sec)}秒)")
     print(f"\n（Current playback position in array B: {pool_index + 1} / {len(matched_pool)} Track number）")
     print(f"✨ Regenerating: {next_picked_key} (Total duration: {int(total_duration_sec)} seconds)")
-    fade_steps = 100
+    fade_steps = 150
     step_sleep = fade_sec / fade_steps
-    
+
     for step in range(1, fade_steps + 1):
-      ratio = step / fade_steps
+      # 0.01 〜 1.50 まで変化させる（100ステップを基準とした倍率）
+      ratio = step / 100.0
+
       if ch_current.get_busy():
-        ch_current.set_volume(1.0 - ratio)
+        # ratioが0.5を超えるまで1.0を維持し、その後1.5で0.0になる
+        vol_current = max(0.0, min(1.0, 1.5 - ratio))
+        ch_current.set_volume(vol_current)
+
       if ch_next.get_busy():
-        ch_next.set_volume(ratio)
+        # ratioが1.0になるまで上昇し、その後は1.0を維持
+        vol_next = min(1.0, ratio)
+        ch_next.set_volume(vol_next)
+
       time.sleep(step_sleep)
     ch_current.stop()
     
